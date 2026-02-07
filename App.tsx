@@ -51,7 +51,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 const App = () => {
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.text}>HELLO WOrld</Text>
+      <Text style={styles.text}>HELLO WORLD</Text>
     </SafeAreaView>
   )
 }
