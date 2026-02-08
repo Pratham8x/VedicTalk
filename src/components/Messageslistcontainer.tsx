@@ -7,41 +7,51 @@ import {
 } from 'react-native'
 import { ChatMessage } from '../types/chat'
 import { MessageBubble } from './MessageBubble'
-
+import { TypingIndicator } from './TypingIndicator'
 
 interface MessagesListContainerProps {
   messages: ChatMessage[]
-  onMessageLongPress: (message: ChatMessage) => void
+  onSwipeRight: (message: ChatMessage) => void
+  isTyping: boolean
+  isSendingResponse: boolean
 }
 
 export const MessagesListContainer = React.forwardRef<FlatList, MessagesListContainerProps>(
-  ({ messages, onMessageLongPress }, ref) => {
+  ({ messages, onSwipeRight, isTyping, }, ref) => {
     // Show empty state when no messages
     if (messages.length === 0) {
       return <EmptyState />
     }
 
     return (
-      <FlatList
-        ref={ref}
-        data={messages}
-        keyExtractor={item => item.id}
-        renderItem={({ item }) => (
-          <MessageBubble
-            message={item}
-            onLongPress={onMessageLongPress}
-          />
+      <View style={styles.container}>
+        <FlatList
+          ref={ref}
+          data={messages}
+          keyExtractor={item => item.id}
+          renderItem={({ item }) => (
+            <MessageBubble
+              message={item}
+              onSwipeRight={onSwipeRight}
+            />
+          )}
+          contentContainerStyle={styles.listContent}
+          keyboardShouldPersistTaps="handled"
+          scrollIndicatorInsets={{ right: 1 }}
+          showsVerticalScrollIndicator={true}
+        />
+        
+  
+        {isTyping && (
+          <TypingIndicator/>
         )}
-        contentContainerStyle={styles.listContent}
-        keyboardShouldPersistTaps="handled"
-        scrollIndicatorInsets={{ right: 1 }}
-        showsVerticalScrollIndicator={true}
-      />
+      </View>
     )
   }
 )
 
 MessagesListContainer.displayName = 'MessagesListContainer'
+
 const EmptyState: React.FC = () => (
   <View style={styles.emptyState}>
     <View style={styles.emptyIcon}>
@@ -49,12 +59,17 @@ const EmptyState: React.FC = () => (
     </View>
     <Text style={styles.emptyTitle}>Start a conversation</Text>
     <Text style={styles.emptySubtitle}>
-      Ask Sanjai about astrology and get cosmic insights
+      Ask Sanjai Maharaj about astrology and get cosmic insights
     </Text>
   </View>
 )
 
+
+
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   listContent: {
     paddingVertical: 12,
     flexGrow: 1,
@@ -89,5 +104,36 @@ const styles = StyleSheet.create({
     color: '#999',
     textAlign: 'center',
     lineHeight: 20,
+  },
+  indicatorContainer: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    alignItems: 'flex-start',
+  },
+  bubble: {
+    maxWidth: '75%',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 16,
+    backgroundColor: '#F1F1F1',
+  },
+  astroBubble: {
+    backgroundColor: '#F1F1F1',
+  },
+  sendingDots: {
+    flexDirection: 'row',
+    marginBottom: 4,
+  },
+  dot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#666',
+    marginHorizontal: 2,
+  },
+  sendingText: {
+    fontSize: 13,
+    color: '#666',
+    fontStyle: 'italic',
   },
 })

@@ -7,20 +7,19 @@ import {
   Animated,
   SafeAreaView,
   Text,
+  TouchableOpacity,
 } from 'react-native'
 
 interface MessageInputProps {
   value: string
   onChange: (text: string) => void
   onSend: () => void
-  onAttachment: () => void
 }
 
 export const MessageInput: React.FC<MessageInputProps> = ({
   value,
   onChange,
   onSend,
-  onAttachment,
 }) => {
   const [isFocused, setIsFocused] = useState(false)
   const scaleAnim = useRef(new Animated.Value(1)).current
@@ -48,15 +47,11 @@ export const MessageInput: React.FC<MessageInputProps> = ({
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={[styles.container, isFocused && styles.containerFocused]}>
-        <Pressable
-          onPress={onAttachment}
-          style={({ pressed }) => [
-            styles.attachButton,
-            pressed && styles.attachButtonPressed,
-          ]}
+        <TouchableOpacity
+          style={styles.attachButton}
         >
           <Text style={styles.plusIcon}>+</Text>
-        </Pressable>
+        </TouchableOpacity>
 
         <TextInput
           value={value}
@@ -90,7 +85,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
               pressed && !isSendDisabled && styles.sendButtonPressed,
             ]}
           >
-            <Text style={styles.sendIcon}>↑</Text>
+            <Text style={styles.sendIcon}>&gt;</Text>
           </Pressable>
         </Animated.View>
       </View>
@@ -103,7 +98,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderTopWidth: 1,
     borderTopColor: '#F0F0F0',
-        marginBottom:10
+    marginBottom: 10
 
   },
   container: {

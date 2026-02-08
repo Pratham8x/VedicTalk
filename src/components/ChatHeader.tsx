@@ -8,9 +8,10 @@ import {
   Image,
   ImageSourcePropType,
 } from 'react-native'
+import { useNavigation } from '@react-navigation/native' // Import useNavigation
 
 interface ChatHeaderProps {
-  onBackPress: () => void
+  onBackPress?: () => void // Make it optional
   onMenuPress: () => void
   onAstroPress: () => void
   astrologerName?: string
@@ -20,43 +21,47 @@ interface ChatHeaderProps {
 }
 
 export const ChatHeader: React.FC<ChatHeaderProps> = ({
-  onBackPress,
   onMenuPress,
   onAstroPress,
   astrologerName = 'Sanjai Maharaj',
   astrologerTitle = 'Vedic Astrologer',
   showBackButton = true,
 }) => {
+  const navigation = useNavigation() 
+
+  const handleBackPress = () => {
+  
+      navigation.navigate('Splash' as never) 
+    
+  }
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
         {/* Back Button */}
         {showBackButton && (
           <Pressable 
-            onPress={onBackPress} 
+            onPress={handleBackPress} // Use the handler
             style={styles.backButton}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            hitSlop={{ top: 10, bottom: 15, left: 10, right: 10 }}
           >
             <Text style={styles.backIcon}>‹</Text>
           </Pressable>
         )}
 
-        {/* Astrologer Info */}
+        {/* Rest of your component remains the same */}
         <Pressable
           onPress={onAstroPress}
           style={[styles.astroInfo, !showBackButton && styles.astroInfoExpanded]}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          {/* Avatar/Image Container */}
           <View style={styles.avatarContainer}>
-              <Image
-                source={require('../../assets/Astro.webp')}
-                style={styles.astrologerImage}
-              />
-     
+            <Image
+              source={require('../../assets/Astro.webp')}
+              style={styles.astrologerImage}
+            />
           </View>
 
-          {/* Name and Title */}
           <View style={styles.nameContainer}>
             <Text style={styles.name} numberOfLines={1}>
               {astrologerName}
@@ -67,19 +72,19 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
           </View>
         </Pressable>
 
-        {/* Menu Button */}
         <Pressable
           onPress={onMenuPress}
           style={styles.menuButton}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Text style={styles.menuIcon}>⋯</Text>
+          <Text style={styles.menuIcon}>𝍄</Text>
         </Pressable>
       </View>
     </SafeAreaView>
   )
 }
 
+// Styles remain the same
 const styles = StyleSheet.create({
   safeArea: {
     backgroundColor: '#FFFFFF',
@@ -100,12 +105,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 20,
     backgroundColor: '#F5F5F5',
-    marginRight: 12,
+    marginRight: 19,
   },
   backIcon: {
     fontSize: 28,
     color: '#333',
     fontWeight: '600',
+    alignSelf: "center",
+    paddingBottom: 10,
   },
   astroInfo: {
     flex: 1,
@@ -114,7 +121,7 @@ const styles = StyleSheet.create({
     paddingRight: 12,
   },
   astroInfoExpanded: {
-    paddingLeft: 0, // More space when back button is hidden
+    paddingLeft: 0,
   },
   avatarContainer: {
     width: 48,
@@ -125,31 +132,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  avatar: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 24,
-    backgroundColor: '#FFB84D',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   astrologerImage: {
     width: '100%',
     height: '100%',
     borderRadius: 24,
   },
-  avatarText: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#FFFFFF',
-  },
   nameContainer: {
     flex: 1,
   },
   name: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
+    fontSize: 19,
+    fontWeight: 'bold',
+    color: '#000',
   },
   subtitle: {
     fontSize: 13,

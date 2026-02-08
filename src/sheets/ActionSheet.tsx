@@ -58,7 +58,7 @@ export const ActionSheetComponent = forwardRef<ActionSheetRef, {}>((_, ref) => {
         entering={FadeIn.duration(200)}
         exiting={FadeOut.duration(200)}
       >
-        <Pressable style={StyleSheet.absoluteFillObject} onPress={hide} />
+        <Pressable  onPress={hide} />
 
         <Animated.View
           style={styles.sheetContainer}
