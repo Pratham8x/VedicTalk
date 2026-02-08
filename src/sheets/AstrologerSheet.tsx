@@ -104,7 +104,7 @@ AstrologerSheet.displayName = 'AstrologerSheet'
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(245, 242, 242, 0.45)',
+    backgroundColor: 'rgba(200, 200, 200, 0.4)',
     justifyContent: 'flex-end',
   },
   sheetWrapper: {
