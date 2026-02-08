@@ -29,10 +29,10 @@ export const MessagesListContainer = React.forwardRef<FlatList, MessagesListCont
           data={messages}
           keyExtractor={item => item.id}
           renderItem={({ item }) => (
-  <MessageBubble
-  message={item}
-  onSwipeRight={() => onSwipeRight(item)}
-/>
+            <MessageBubble
+              message={item}
+              onSwipeRight={() => onSwipeRight(item)}
+            />
 
           )}
           contentContainerStyle={styles.listContent}
@@ -40,10 +40,10 @@ export const MessagesListContainer = React.forwardRef<FlatList, MessagesListCont
           scrollIndicatorInsets={{ right: 1 }}
           showsVerticalScrollIndicator={true}
         />
-        
-  
+
+
         {isTyping && (
-          <TypingIndicator/>
+          <TypingIndicator />
         )}
       </View>
     )

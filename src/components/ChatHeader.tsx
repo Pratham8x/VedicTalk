@@ -97,6 +97,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     height: 70,
+    marginTop:10
   },
   backButton: {
     width: 40,
@@ -108,11 +109,11 @@ const styles = StyleSheet.create({
     marginRight: 19,
   },
   backIcon: {
-    fontSize: 28,
+    fontSize: 35,
     color: '#333',
     fontWeight: '600',
     alignSelf: "center",
-    paddingBottom: 10,
+    marginTop:-7
   },
   astroInfo: {
     flex: 1,

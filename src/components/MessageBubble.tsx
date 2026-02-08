@@ -80,71 +80,76 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
     })
   ).current
 
-  return (
-    <View style={[styles.container, isUser ? styles.userRow : styles.astroRow]}>
-      {/* Reply icon */}
-      <Animated.View
-        style={[
-          styles.replyIconContainer,
-          { opacity: replyIconOpacity },
-        ]}
-      >
-        <Text style={styles.replyIcon}>↩️</Text>
-        <Text style={styles.replyText}>Reply</Text>
-      </Animated.View>
+return (
+  <View style={[styles.container, isUser ? styles.userRow : styles.astroRow]}>
+    {/* Reply icon */}
+    <Animated.View
+      style={[
+        styles.replyIconContainer,
+        { opacity: replyIconOpacity },
+      ]}
+    >
+      <Text style={styles.replyIcon}>↩️</Text>
+      <Text style={styles.replyText}>Reply</Text>
+    </Animated.View>
 
-      <Animated.View
+    <Animated.View
+      style={[
+        styles.bubbleWrapper,
+        { transform: [{ translateX }] },
+      ]}
+      {...panResponder.panHandlers}
+    >
+      {/* MESSAGE BUBBLE */}
+      <View
         style={[
-          styles.bubbleContainer,
-          {
-            transform: [{ translateX }], // ✅ number-based value
-          },
+          styles.bubble,
+          isUser ? styles.userBubble : styles.astroBubble,
         ]}
-        {...panResponder.panHandlers}
       >
-        <View
+        {message.quotedMessage && (
+          <View style={styles.quotedMessageContainer}>
+            <View style={styles.quoteBar} />
+            <View style={styles.quoteContent}>
+              <Text
+                style={styles.quotedText}
+                numberOfLines={2}
+              >
+                {message.quotedMessage.text}
+              </Text>
+            </View>
+          </View>
+        )}
+
+        <Text
           style={[
-            styles.bubble,
-            isUser ? styles.userBubble : styles.astroBubble,
+            styles.messageText,
+            isUser ? styles.userText : styles.astroText,
           ]}
         >
-          {message.quotedMessage && (
-            <View style={styles.quotedMessageContainer}>
-              <View style={styles.quoteBar} />
-              <View style={styles.quoteContent}>
-                <Text
-                  style={styles.quotedText}
-                  numberOfLines={2}
-                  ellipsizeMode="tail"
-                >
-                  {message.quotedMessage.text}
-                </Text>
-              </View>
-            </View>
-          )}
+          {message.text}
+        </Text>
+      </View>
 
-          <Text
-            style={[
-              styles.messageText,
-              isUser ? styles.userText : styles.astroText,
-            ]}
-          >
-            {message.text}
-          </Text>
-
-          {timestamp && (
-            <View style={styles.timestampContainer}>
-              <Text style={styles.timestamp}>{timestamp}</Text>
-              {isUser && (
-                <>
-                  <Text style={styles.checkmark}>✓</Text>
-                  <Text style={styles.checkmark}>✓</Text>
-                </>
-              )}
+      {/* META INFO (OUTSIDE BUBBLE) */}
+      {timestamp && (
+        <View
+          style={[
+            styles.metaRow,
+            isUser ? styles.metaUser : styles.metaAstro,
+          ]}
+        >
+          <Text style={styles.timestamp}>{timestamp}</Text>
+          {isUser && (
+            <View style={styles.tickContainer}>
+              <Text style={styles.checkmark}>✓</Text>
+              <Text style={styles.checkmark}>✓</Text>
             </View>
           )}
         </View>
-      </Animated.View>
-    </View>
-  )
+      )}
+    </Animated.View>
+  </View>
+)
+
 }

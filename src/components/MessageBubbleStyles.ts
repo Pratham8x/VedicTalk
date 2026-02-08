@@ -8,6 +8,40 @@ export const styles = StyleSheet.create({
   userRow: {
     alignItems: 'flex-end',
   },
+  bubbleWrapper: {
+  maxWidth: '80%',
+},
+
+metaRow: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  marginTop: 4,
+},
+
+metaUser: {
+  alignSelf: 'flex-end',
+},
+
+metaAstro: {
+  alignSelf: 'flex-start',
+},
+
+timestamp: {
+  fontSize: 11,
+  color: '#999',
+},
+
+tickContainer: {
+  flexDirection: 'row',
+  marginLeft: 8,
+},
+
+checkmark: {
+  fontSize: 11,
+  color: '#4FC3F7',
+  marginLeft: -4,
+},
+
   astroRow: {
     alignItems: 'flex-start',
   },
@@ -61,16 +95,7 @@ export const styles = StyleSheet.create({
     marginTop: 4,
     justifyContent: 'flex-end',
   },
-  timestamp: {
-    fontSize: 11,
-    color: 'rgba(0, 0, 0, 0.5)',
-    marginRight: 8,
-  },
-  checkmark: {
-    fontSize: 11,
-    color: '#0084FF',
-    marginLeft: -4, // Reduced margin for closer spacing
-  },
+
   replyIconContainer: {
     position: 'absolute',
     right: '78%',

@@ -37,7 +37,7 @@ export const AstrologerSheet = forwardRef<AstrologerSheetRef, {}>(
         onRequestClose={collapse}
       >
         <Pressable style={styles.backdrop} onPress={collapse}>
-          <View style={[styles.sheetWrapper, { height: screenHeight * 0.6 }]}>
+          <View style={[styles.sheetWrapper, { height: screenHeight * 0.55 }]}>
             <SafeAreaView style={styles.safeArea}>
               <Pressable
                 style={styles.sheetContainer}
@@ -59,7 +59,6 @@ export const AstrologerSheet = forwardRef<AstrologerSheetRef, {}>(
 
                   {/* Name */}
                   <Text style={styles.name}>Sanjai Maharaj</Text>
-                  <Text style={styles.subtitle}>Vedic Astrologer</Text>
 
                   <Text style={styles.description}>
                     Krishnamurti Paddhatti system of Astrology with spiritual guidance
@@ -105,7 +104,7 @@ AstrologerSheet.displayName = 'AstrologerSheet'
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.45)',
+    backgroundColor: 'rgba(245, 242, 242, 0.45)',
     justifyContent: 'flex-end',
   },
   sheetWrapper: {
@@ -149,11 +148,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#222',
   },
-  subtitle: {
-    fontSize: 15,
-    color: '#666',
-    marginTop: 4,
-  },
+
   description: {
     fontSize: 14,
     color: '#777',
