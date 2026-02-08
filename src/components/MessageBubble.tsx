@@ -29,7 +29,9 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   onSwipeRight,
 }) => {
   const isUser = message.sender === 'user'
-  const pan = useRef(new Animated.ValueXY()).current
+
+  // IMPORTANT: number-based Animated.Value
+  const translateX = useRef(new Animated.Value(0)).current
   const replyIconOpacity = useRef(new Animated.Value(0)).current
 
   const timestamp = useMemo(() => {
@@ -45,67 +47,58 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder: (_, gestureState) => {
-        // Only respond to horizontal swipes
-        return Math.abs(gestureState.dx) > Math.abs(gestureState.dy * 2)
-      },
-      onPanResponderMove: (_, gestureState) => {
-        // Only allow right swipe (positive dx) for user messages
-        if (isUser && gestureState.dx > 0) {
-          pan.x.setValue(gestureState.dx)
-          
-          // Show reply icon with fade in effect
-          const opacity = Math.min(gestureState.dx / SWIPE_THRESHOLD, 1)
-          replyIconOpacity.setValue(opacity)
+      onMoveShouldSetPanResponder: (_, gesture) =>
+        Math.abs(gesture.dx) > Math.abs(gesture.dy * 2),
+
+      onPanResponderMove: (_, gesture) => {
+        if (gesture.dx > 0) {
+          translateX.setValue(gesture.dx)
+          replyIconOpacity.setValue(
+            Math.min(gesture.dx / SWIPE_THRESHOLD, 1)
+          )
         }
       },
-      onPanResponderRelease: (_, gestureState) => {
-        if (isUser && gestureState.dx > SWIPE_THRESHOLD) {
-          // Swipe successful - trigger reply
+
+      onPanResponderRelease: (_, gesture) => {
+        if (gesture.dx > SWIPE_THRESHOLD) {
           onSwipeRight(message)
         }
-        
-        // Reset position
-        Animated.spring(pan.x, {
-          toValue: 0,
-          useNativeDriver: true,
-          friction: 8,
-        }).start()
-        
-        // Hide reply icon
-        Animated.timing(replyIconOpacity, {
-          toValue: 0,
-          duration: 200,
-          useNativeDriver: true,
-        }).start()
+
+        Animated.parallel([
+          Animated.spring(translateX, {
+            toValue: 0,
+            useNativeDriver: true,
+            friction: 8,
+          }),
+          Animated.timing(replyIconOpacity, {
+            toValue: 0,
+            duration: 150,
+            useNativeDriver: true,
+          }),
+        ]).start()
       },
     })
   ).current
 
   return (
     <View style={[styles.container, isUser ? styles.userRow : styles.astroRow]}>
-      {/* Reply Icon (appears during swipe) */}
-      {isUser && (
-        <Animated.View 
-          style={[
-            styles.replyIconContainer,
-            {
-              opacity: replyIconOpacity,
-              transform: [{ translateX: -30 }]
-            }
-          ]}
-        >
-          <Text style={styles.replyIcon}>↩️</Text>
-          <Text style={styles.replyText}>Reply</Text>
-        </Animated.View>
-      )}
-      
+      {/* Reply icon */}
+      <Animated.View
+        style={[
+          styles.replyIconContainer,
+          { opacity: replyIconOpacity },
+        ]}
+      >
+        <Text style={styles.replyIcon}>↩️</Text>
+        <Text style={styles.replyText}>Reply</Text>
+      </Animated.View>
+
       <Animated.View
         style={[
           styles.bubbleContainer,
           {
-            transform: [{ translateX: pan.x }]
-          }
+            transform: [{ translateX }], // ✅ number-based value
+          },
         ]}
         {...panResponder.panHandlers}
       >
@@ -131,7 +124,10 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           )}
 
           <Text
-            style={[styles.messageText, isUser ? styles.userText : styles.astroText]}
+            style={[
+              styles.messageText,
+              isUser ? styles.userText : styles.astroText,
+            ]}
           >
             {message.text}
           </Text>
@@ -152,4 +148,3 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
     </View>
   )
 }
-

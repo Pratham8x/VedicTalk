@@ -18,7 +18,6 @@ interface MessagesListContainerProps {
 
 export const MessagesListContainer = React.forwardRef<FlatList, MessagesListContainerProps>(
   ({ messages, onSwipeRight, isTyping, }, ref) => {
-    // Show empty state when no messages
     if (messages.length === 0) {
       return <EmptyState />
     }
@@ -30,10 +29,11 @@ export const MessagesListContainer = React.forwardRef<FlatList, MessagesListCont
           data={messages}
           keyExtractor={item => item.id}
           renderItem={({ item }) => (
-            <MessageBubble
-              message={item}
-              onSwipeRight={onSwipeRight}
-            />
+  <MessageBubble
+  message={item}
+  onSwipeRight={() => onSwipeRight(item)}
+/>
+
           )}
           contentContainerStyle={styles.listContent}
           keyboardShouldPersistTaps="handled"

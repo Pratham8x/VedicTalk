@@ -70,7 +70,6 @@ export const ChatScreen: React.FC<{
 
   const handleMenuPress = useCallback(() => {
     showActionSheet({
-      title: 'Chat options',
       description: 'Choose an action',
       highlightIndex: 1,
       actions: [
