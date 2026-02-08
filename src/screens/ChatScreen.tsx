@@ -1,116 +1,157 @@
-import React, { useState } from 'react'
+import React, { useRef, useState, useCallback, useEffect } from 'react'
 import {
-  View,
-  Text,
+  SafeAreaView,
   StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  FlatList,
 } from 'react-native'
-import ChatMessage from '../components/ChatMessage'
-import TypingBubble from '../components/TypingBubble'
+import { ChatMessage } from '../types/chat'
+import { ChatHeader } from '../components/ChatHeader'
+import { MessageInput } from '../components/MessageInput'
+import { QuickReplyPreview } from '../components/QuickReplyPreview'
+import { AttachmentModal } from '../components/AttachmentModal'
+import { useMenuActions } from '../components/Usemenuactions'
+import { MessagesListContainer } from '../components/Messageslistcontainer'
+import { ActionSheetComponent } from '../sheets/ActionSheet'
 
-export default function ChatScreen() {
-  const [message, setMessage] = useState('')
-  const [showTyping, setShowTyping] = useState(false)
+export const ChatScreen: React.FC<{
+  onBackPress?: () => void
+}> = ({ onBackPress }) => {
+  // ===================== STATE =====================
+  const [messages, setMessages] = useState<ChatMessage[]>([])
+  const [inputText, setText] = useState('')
+  const [selectedMessage, setSelectedMessage] = useState<ChatMessage | undefined>()
+  const [attachmentModalVisible, setAttachmentModalVisible] = useState(false)
 
-  const messages = [
-    { id: '1', text: 'Hello Guruji 🙏', isUser: true },
-    {
-      id: '2',
-      text: 'Thank you for your message. We’ll get back to you shortly.',
-      isUser: false,
+  // ===================== REFS =====================
+  const flatListRef = useRef<any>(null)
+  const actionSheetRef = useRef<any>(null)
+
+  // ===================== EFFECTS =====================
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    if (messages.length > 0) {
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd({ animated: true })
+      }, 100)
+    }
+  }, [messages])
+
+  // ===================== HANDLERS =====================
+  const handleSendMessage = useCallback(() => {
+    if (!inputText.trim()) return
+
+    const userMessage: ChatMessage = {
+      id: `msg-${Date.now()}`,
+      text: inputText.trim(),
+      sender: 'user',
+      quotedMessage: selectedMessage,
+      timestamp: new Date(),
+    }
+
+    setMessages(prev => [...prev, userMessage])
+    setText('')
+    setSelectedMessage(undefined)
+
+    // Simulate astrologer response
+    setTimeout(() => {
+      const astroMessage: ChatMessage = {
+        id: `msg-${Date.now()}-astro`,
+        text: "Thank you for your message, I'll get back to you shortly.",
+        sender: 'astro',
+        timestamp: new Date(),
+      }
+      setMessages(prev => [...prev, astroMessage])
+    }, 500)
+  }, [inputText, selectedMessage])
+
+  const handleMessageLongPress = useCallback((message: ChatMessage) => {
+    setSelectedMessage(message)
+  }, [])
+
+  const { handleMenuPress } = useMenuActions({
+    onClearChat: () => {
+      setMessages([])
+      setSelectedMessage(undefined)
     },
-  ]
+    onDeleteChat: () => {
+      setMessages([])
+      setSelectedMessage(undefined)
+      onBackPress?.()
+    },
+    actionSheetRef,
+  })
+
+  const handleBackPress = useCallback(() => {
+    onBackPress?.()
+  }, [onBackPress])
+
+  const handleAstroInfoPress = useCallback(() => {
+    console.log('Astrologer info pressed - add your navigation/modal here')
+  }, [])
+
+  const handleAttachmentPress = useCallback(() => {
+    setAttachmentModalVisible(true)
+  }, [])
+
+  const handleSelectPhoto = useCallback(() => {
+    console.log('Photo selected - integrate with image picker library')
+  }, [])
+
+  const handleSelectCamera = useCallback(() => {
+    console.log('Camera selected - integrate with camera library')
+  }, [])
+
+  const handleSelectFile = useCallback(() => {
+    console.log('File selected - integrate with file picker library')
+  }, [])
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} >
       {/* Header */}
-      <TouchableOpacity style={styles.header}>
-        <Text style={styles.headerTitle}>
-          Sanjai Maharaj · Vedic Astrologer
-        </Text>
-      </TouchableOpacity>
-
-      {/* Messages */}
-      <FlatList
-        data={messages}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <ChatMessage text={item.text} isUser={item.isUser} />
-        )}
-        contentContainerStyle={{ paddingVertical: 8 }}
+      <ChatHeader
+        onBackPress={handleBackPress}
+        onMenuPress={handleMenuPress}
+        onAstroPress={handleAstroInfoPress}
       />
 
-      {showTyping && <TypingBubble />}
+      {/* Messages List */}
+      <MessagesListContainer
+        ref={flatListRef}
+        messages={messages}
+        onMessageLongPress={handleMessageLongPress}
+      />
 
-      {/* Input */}
-      <View style={styles.inputRow}>
-        <TouchableOpacity style={styles.plus}>
-          <Text style={{ fontSize: 20 }}>＋</Text>
-        </TouchableOpacity>
+      {/* Quick Reply Preview */}
+      <QuickReplyPreview
+        message={selectedMessage}
+        onClear={() => setSelectedMessage(undefined)}
+      />
 
-        <TextInput
-          style={styles.input}
-          placeholder="Type your message…"
-          value={message}
-          onChangeText={(text) => {
-            setMessage(text)
-            setShowTyping(text.length > 0)
-          }}
-        />
+      {/* Message Input */}
+      <MessageInput
+        value={inputText}
+        onChange={setText}
+        onSend={handleSendMessage}
+        onAttachment={handleAttachmentPress}
+      />
 
-        <TouchableOpacity
-          disabled={!message}
-          style={[
-            styles.send,
-            { opacity: message.length ? 1 : 0.4 },
-          ]}
-          onPress={() => {
-            setMessage('')
-            setShowTyping(false)
-          }}
-        >
-          <Text style={{ fontSize: 18 }}>➤</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+      {/* Action Sheet - Menu Options */}
+      <ActionSheetComponent ref={actionSheetRef} />
+
+      {/* Attachment Modal */}
+      <AttachmentModal
+        visible={attachmentModalVisible}
+        onClose={() => setAttachmentModalVisible(false)}
+        onSelectPhoto={handleSelectPhoto}
+        onSelectCamera={handleSelectCamera}
+        onSelectFile={handleSelectFile}
+      />
+    </SafeAreaView>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-  },
-  header: {
-    padding: 16,
-    borderBottomWidth: 1,
-    borderColor: '#EEE',
-  },
-  headerTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  inputRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 10,
-    borderTopWidth: 1,
-    borderColor: '#EEE',
-  },
-  plus: {
-    padding: 6,
-  },
-  input: {
-    flex: 1,
-    backgroundColor: '#F2F2F2',
-    borderRadius: 20,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    marginHorizontal: 8,
-  },
-  send: {
-    padding: 6,
+    backgroundColor: '#FFFFFF',
   },
 })
